@@ -1,4 +1,92 @@
-node-eachline
-=============
+#eachline
 
-Streams2 line reader
+Streams2 line reader / stream transformer.
+
+First let me say: I did **NOT** want to write yet another line reader! 
+I couldn't find one that is working with node's new `Streams2` objects.
+
+The [byline](https://github.com/jahewson/node-byline) module has taken a first stab at it, 
+but it isn't working. (as of [32bf791e38](https://github.com/jahewson/node-byline/commit/32bf791e387a46c720b604d8d5807eeb8f668ddf))
+
+**So here we are...**
+```javascript
+var fs = require('fs'),
+  eachline = require('eachline'),
+    stream = fs.createReadStream(__dirname+'/.gitignore');
+
+eachline(stream, function(line){
+  console.log(line);
+});
+```
+
+However, if you're just looking to open a file:
+```javascript
+var eachline = require('eachline');
+eachline.in(__dirname+'/.gitignore', function(line){
+  console.log(line);
+});
+```
+
+...or if you need a simple http GET:
+```javascript
+var eachline = require('eachline');
+var url = 'https://raw.github.com/williamwicks/node-eachline/master/.gitignore';
+eachline.in(url, function(line){
+  console.log(line);
+});
+```
+
+##Transforming Streams
+[eachline](https://github.com/williamwicks/node-eachline) uses `Streams2`'s transformation 
+feature allowing you to throw [eachline](https://github.com/williamwicks/node-eachline) between `.pipe()`s
+to modify output as needed.
+
+```javascript
+var fs = require('fs'),
+  eachline = require('eachline'),
+  file = fs.createReadStream(__dirname+'/.gitignore'),
+  transformer = eachline(function(line){
+    return line.substr(0, 2)+'\n';
+  });
+file.pipe(transformer).pipe(process.stdout);
+```
+
+##API
+###eachline([encoding,] callback)
+Use with `pipe()` optionally specifying the encoding.
+
+###eachline(ReadableStream,[ encoding,] callback)
+Got that stream ready? Pass it in, get them lines. Easy-peasy.
+
+**callback(line)**<BR>
+The `callback` arguments below will be called for every line found in the `ReadableStream`.
+
+It will be passed a single `line` argument.
+
+For Stream transformations, the callback **needs to return the data** that you want written to 
+next `pipe()` in the chain.
+
+
+License
+=======
+
+The MIT License (MIT)
+
+Copyright (c) 2013 William Wicks
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
