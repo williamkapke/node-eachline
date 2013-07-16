@@ -30,7 +30,7 @@ function sniffer(args){
 function eachline(a,b,c){
 	var sniff = sniffer(arguments);
 	var t = new Transformer();
-	debugger;
+
 	//stream.pipe(eachline(transformer)).pipe(stdio)
 	if(sniff("function")){
 		t.encoding = "utf8";
