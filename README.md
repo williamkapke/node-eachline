@@ -59,7 +59,7 @@ Use with `pipe()` optionally specifying the encoding.
 Got that stream ready? Pass it in, get them lines. Easy-peasy.
 
 **callback(line)**<BR>
-The `callback` arguments below will be called for every line found in the `ReadableStream`.
+The `callback` arguments above will be called for every line found in the `ReadableStream`.
 
 It will be passed a single `line` argument.
 
