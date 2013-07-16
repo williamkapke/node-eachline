@@ -45,8 +45,8 @@ to modify output as needed.
 var fs = require('fs'),
   eachline = require('eachline'),
   file = fs.createReadStream(__dirname+'/.gitignore'),
-  transformer = eachline(function(line){
-    return line.substr(0, 2)+'\n';
+  transformer = eachline(function(data){
+    return data.substr(0, 2)+'\n';
   });
 file.pipe(transformer).pipe(process.stdout);
 ```
@@ -66,7 +66,7 @@ It returns the `Transform` stream so you can listen to the events.
 ```javascript
 var linecount = 0;
 var eachline = require('eachline');
-eachline.in(__dirname+'/.gitignore', function(line){
+eachline.in(__dirname+'/.gitignore', function(data){
 	linecount++;
 })
 .on('finish', function(){
@@ -74,10 +74,10 @@ eachline.in(__dirname+'/.gitignore', function(line){
 });
 ```
 
-**callback(line)**<BR>
+**callback(data, lineno)**<BR>
 The `callback` arguments above will be called for every line found in the `ReadableStream`.
 
-It will be passed a single `line` argument.
+It will be passed the `data` and `lineno` arguments.
 
 For Stream transformations, the callback **needs to return the data** that you want written to 
 next `pipe()` in the chain.

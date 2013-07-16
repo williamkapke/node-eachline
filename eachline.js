@@ -75,9 +75,8 @@ module.exports.in = function(location, cb){
 			Object.keys(ev._events).forEach(function(event){
 				t._events[event] = ev._events[event];
 			});
-			console.log(Object.keys(ev._events), Object.keys(t._events));
 		})
-			.end();
+		.end();
 		return ev;
 	}
 	else {
@@ -101,6 +100,7 @@ Dummy.prototype._write = function(line, encoding, done) {
 
 
 function Transformer() {
+	this._line = 0;
 	Transform.call(this);
 }
 Transformer.prototype = Object.create(Transform.prototype, { constructor: { value: Transformer }});
@@ -131,7 +131,7 @@ Transformer.prototype._transform = function(chunk, encoding, done) {
 		}
 		start = eol+(hasCRLF? 2:1);
 		if(this.ondata)
-			line = this.ondata(enc? line.toString(enc) : line);
+			line = this.ondata(enc? line.toString(enc) : line, this._line++);
 		this.push(line, this.encoding);
 	}
 
@@ -146,11 +146,12 @@ Transformer.prototype._transform = function(chunk, encoding, done) {
 };
 
 Transformer.prototype._flush = function(done) {
-	if(!this.remnant) return;
-	var line = this.encoding && !/binary|buffer/.test(this.encoding)? this.remnant.toString(this.encoding) : this.remnant;
-	if(this.ondata)
-		line = 	this.ondata(line);
+	if(this.remnant) {
+		var line = this.encoding && !/binary|buffer/.test(this.encoding)? this.remnant.toString(this.encoding) : this.remnant;
+		if(this.ondata)
+			line = 	this.ondata(line, this._line++);
 
-	this.push(line, this.encoding);
+		this.push(line, this.encoding);
+	}
 	done();
 };
