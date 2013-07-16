@@ -1,6 +1,6 @@
 {
 	"name": "eachline",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Streams2 line reader",
 	"keywords": [
 		"streams2",
@@ -11,11 +11,11 @@
 		"type": "git",
 		"url": "git://github.com/williamwicks/node-eachline.git"
 	},
-	"author": "William Wicks <wjwicks@gmail.com>",
+	"author": "William Wicks<wjwicks@gmail.com>",
 	"main": "./eachline.js",
 	"dependencies": {
 	},
 	"engines": {
-		"node": ">= 0.10.0"
+		"node": ">=0.10.0"
 	}
 }

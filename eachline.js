@@ -66,17 +66,23 @@ module.exports.in = function(location, cb){
 	var args = Array.prototype.slice.call(arguments);
 	var web = /(https?):\/\//.exec(location);
 	if(web){
+		var ev = new (require('events').EventEmitter)();
 		location = require('url').parse(location);
 		location.agent = false;
 		require(web[1]).get(location, function(res){
 			args[0] = res;
-			eachline.apply(this, args);
+			var t = eachline.apply(this, args);
+			Object.keys(ev._events).forEach(function(event){
+				t._events[event] = ev._events[event];
+			});
+			console.log(Object.keys(ev._events), Object.keys(t._events));
 		})
 			.end();
+		return ev;
 	}
 	else {
 		args[0] = require('fs').createReadStream(location);
-		eachline.apply(this, args);
+		return eachline.apply(this, args);
 	}
 }
 

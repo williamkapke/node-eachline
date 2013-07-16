@@ -58,6 +58,22 @@ Use with `pipe()` optionally specifying the encoding.
 ###eachline(ReadableStream,[ encoding,] callback)
 Got that stream ready? Pass it in, get them lines. Easy-peasy.
 
+###eachline.in(url, callback)
+###eachline.in(filepath, callback)
+Just a helper function to make these simple tasks cleaner.
+
+It returns the `Transform` stream so you can listen to the events.
+```javascript
+var linecount = 0;
+var eachline = require('eachline');
+eachline.in(__dirname+'/.gitignore', function(line){
+	linecount++;
+})
+.on('finish', function(){
+	console.log(linecount + " lines found");
+});
+```
+
 **callback(line)**<BR>
 The `callback` arguments above will be called for every line found in the `ReadableStream`.
 
