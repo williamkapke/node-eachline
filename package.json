@@ -1,0 +1,21 @@
+{
+	"name": "eachline",
+	"version": "1.0.0",
+	"description": "Streams2 line reader",
+	"keywords": [
+		"streams2",
+		"linereader"
+	],
+	"homepage": "http://github.com/williamwicks/node-eachline",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/williamwicks/node-eachline.git"
+	},
+	"author": "William Wicks <wjwicks@gmail.com>",
+	"main": ".eachline",
+	"dependencies": {
+	},
+	"engines": {
+		"node": ">= 10.0.0"
+	}
+}
