@@ -12,10 +12,10 @@
 		"url": "git://github.com/williamwicks/node-eachline.git"
 	},
 	"author": "William Wicks <wjwicks@gmail.com>",
-	"main": ".eachline",
+	"main": "./eachline.js",
 	"dependencies": {
 	},
 	"engines": {
-		"node": ">= 10.0.0"
+		"node": ">= 0.10.0"
 	}
 }
