@@ -10,9 +10,9 @@ but it isn't working. (as of [32bf791e38](https://github.com/jahewson/node-bylin
 
 **So here we are...**
 ```javascript
-var fs = require('fs'),
-  eachline = require('eachline'),
-    stream = fs.createReadStream(__dirname+'/.gitignore');
+var fs = require('fs');
+var eachline = require('eachline');
+var stream = fs.createReadStream(__dirname+'/.gitignore');
 
 eachline(stream, function(line){
   console.log(line);
@@ -42,12 +42,14 @@ feature allowing you to throw [eachline](https://github.com/williamwicks/node-ea
 to modify output as needed.
 
 ```javascript
-var fs = require('fs'),
-  eachline = require('eachline'),
-  file = fs.createReadStream(__dirname+'/.gitignore'),
-  transformer = eachline(function(data){
-    return data.substr(0, 2)+'\n';
-  });
+var fs = require('fs');
+var eachline = require('eachline');
+var file = fs.createReadStream(__dirname+'/.gitignore');
+
+var transformer = eachline(function(data){
+  return data.substr(0, 2)+'\n';
+});
+
 file.pipe(transformer).pipe(process.stdout);
 ```
 
@@ -58,8 +60,8 @@ Use with `pipe()` optionally specifying the encoding.
 ###eachline(ReadableStream,[ encoding,] callback)
 Got that stream ready? Pass it in, get them lines. Easy-peasy.
 
-###eachline.in(url, callback)
-###eachline.in(filepath, callback)
+###eachline.in(url, callback)<br>
+eachline.in(filepath, callback)
 Just a helper function to make these simple tasks cleaner.
 
 It returns the `Transform` stream so you can listen to the events.
@@ -74,13 +76,14 @@ eachline.in(__dirname+'/.gitignore', function(data){
 });
 ```
 
-**callback(data, lineno)**<BR>
+**callback(data, lineno[ ,next])**<BR>
 The `callback` arguments above will be called for every line found in the `ReadableStream`.
 
-It will be passed the `data` and `lineno` arguments.
+It will be passed the `data` and `lineno` arguments. You can optionally defined a
+3rd argument to get asynchronous flow. `eachline` examines `callback.length` to detirmine
+if asynchronous flow should be used. If found, you must call `next()` to continue reading.
 
-For Stream transformations, the callback **needs to return the data** that you want written to 
-next `pipe()` in the chain.
+For Stream transformations, any value `return`'d will be written to the next `pipe()` in the chain.
 
 
 License

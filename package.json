@@ -1,10 +1,13 @@
 {
 	"name": "eachline",
-	"version": "1.1.0",
+	"version": "2.3.3",
 	"description": "Streams2 line reader",
 	"keywords": [
 		"streams2",
-		"linereader"
+		"linereader",
+		"async", "asynchronous",
+		"pipe",
+		"transform"
 	],
 	"homepage": "http://github.com/williamwicks/node-eachline",
 	"repository": {
@@ -14,6 +17,7 @@
 	"author": "William Wicks<wjwicks@gmail.com>",
 	"main": "./eachline.js",
 	"dependencies": {
+		"type-of": "~2"
 	},
 	"engines": {
 		"node": ">=0.10.0"

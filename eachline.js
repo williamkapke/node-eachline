@@ -2,65 +2,46 @@
 
 var stream = require('stream');
 var Transform = stream.Transform;
-var Readable = stream.Readable;
+var type = require("type-of");
 
-function str(s){
-	return typeof s === "string";
-}
-function sniffer(args){
-	return function(){
-		if(arguments.length!==args.length)
-			return false;
-
-		for(var i=0;i<args.length;i++){
-			var type = arguments[i];
-			var arg = args[i];
-			if(str(type)){
-				if(typeof arg !== type){
-					return false;
-				}
-			}
-			else if(!(arg instanceof type))
-				return false;
-		}
-		return true;
-	}
-}
 
 function eachline(a,b,c){
-	var sniff = sniffer(arguments);
+	var signature = Array.prototype.map.call(arguments, type).join();
 	var t = new Transformer();
+	switch(signature){
+		//stream.pipe(eachline(transformer)).pipe(stdio)
+		case "function":
+			t.encoding = "utf8";
+			t.ondata = a;
+			return t;
 
-	//stream.pipe(eachline(transformer)).pipe(stdio)
-	if(sniff("function")){
-		t.encoding = "utf8";
-		t.ondata = a;
-		return t;
-	}
-	//stream.pipe(eachline("hex", transformer)).pipe(stdio)
-	else if(sniff("string", "function") || sniff("string")){
-		t.encoding = a;
-		t.ondata = b;
-		return t;
-	}
-	//eachline(stream, ondata);
-	else if(sniff(Readable, "function") || sniff(Readable)){
-		t.encoding = "utf8";
-		t.ondata = b;
-		return a.pipe(t).pipe(new Dummy());
-	}
-	//eachline(stream, "hex", ondata);
-	else if(sniff(Readable, "string", "function") || sniff(Readable, "string")){
-		t.encoding = b;
-		t.ondata = c;
-		return a.pipe(t).pipe(new Dummy());
-	}
-	else {
-		throw new Errow("I don't know what you want");
+		//stream.pipe(eachline("hex", transformer)).pipe(stdio)
+		case "string":
+		case "string,function":
+			t.encoding = a;
+			t.ondata = b;
+			return t;
+
+		//eachline(stream, ondata);
+		case "object":
+		case "object,function":
+			t.encoding = "utf8";
+			t.ondata = b;
+			a.pipe(t).pipe(new Dummy());
+			return t;
+
+		//eachline(stream, "hex", ondata);
+		case "object,string":           //Readable,string
+		case "object,string,function":  //Readable,string,function
+			t.encoding = b;
+			t.ondata = c;
+			a.pipe(t).pipe(new Dummy());
+			return t;
 	}
 
-	return t;
+	throw new Error("I don't know what you want");
 };
+
 module.exports = eachline;
 module.exports.in = function(location, cb){
 	var args = Array.prototype.slice.call(arguments);
@@ -116,33 +97,54 @@ function findEOL(bytes, i){
 	return false;
 }
 Transformer.prototype._transform = function(chunk, encoding, done) {
-	var start = 0,
+	var xform = this,
+		start = 0,
 		enc = !/binary|buffer/.test(this.encoding)? this.encoding : false,
 		eol;
 
-	while((eol=findEOL(chunk, start))!==false){
-		var line, hasCRLF = chunk[eol]===13 && chunk[eol+1]===10;
-		if(this.remnant){
-			line = Buffer.concat([this.remnant, chunk.slice(start, eol)]);
-			delete this.remnant;
+	function next() {
+		if((eol=findEOL(chunk, start))!==false){
+
+			var line, hasCRLF = chunk[eol]===13 && chunk[eol+1]===10;
+
+			if(xform.remnant){
+				line = Buffer.concat([xform.remnant, chunk.slice(start, eol)]);
+				delete xform.remnant;
+			}
+			else {
+				line = chunk.slice(start, eol);
+			}
+			start = eol+(hasCRLF? 2:1);
+
+			var sigd = false;
+			function signaled(data) {
+				if(sigd) return;
+				sigd=true;
+				if(data) {
+					xform.push(data, xform.encoding);
+				}
+				next();
+			}
+
+			if(xform.ondata){
+				line = xform.ondata(enc? line.toString(enc) : line, xform._line++, signaled);
+			}
+
+			signaled(line);
 		}
 		else {
-			line = chunk.slice(start, eol);
+			if(xform.remnant){//no LF found in this chunk
+				xform.remnant = Buffer.concat([xform.remnant, chunk]);;
+			}
+			else {
+				xform.remnant = chunk.slice(start);
+			}
+
+			return done();
 		}
-		start = eol+(hasCRLF? 2:1);
-		if(this.ondata)
-			line = this.ondata(enc? line.toString(enc) : line, this._line++);
-		this.push(line, this.encoding);
 	}
 
-	if(this.remnant){//no LF found in this chunk
-		this.remnant = Buffer.concat([this.remnant, chunk]);;
-	}
-	else {
-		this.remnant = chunk.slice(start);
-	}
-
-	done();
+	next();
 };
 
 Transformer.prototype._flush = function(done) {
