@@ -54,6 +54,9 @@ file.pipe(transformer).pipe(process.stdout);
 ```
 
 ##API
+###eachline()
+Use with a `pipe()` to re-chunk the stream into lines.
+
 ###eachline([encoding,] callback)
 Use with `pipe()` optionally specifying the encoding.
 
