@@ -37,6 +37,9 @@ function eachline(a,b,c){
 			t.ondata = c;
 			a.pipe(t).pipe(new Dummy());
 			return t;
+		case "":
+			t.encoding = "utf8";
+			return t;
 	}
 
 	throw new Error("I don't know what you want");
@@ -126,8 +129,13 @@ Transformer.prototype._transform = function(chunk, encoding, done) {
 				next();
 			}
 
+			if(enc)
+				line= line.toString(enc);
 			if(xform.ondata){
-				line = xform.ondata(enc? line.toString(enc) : line, xform._line++, signaled);
+				line = xform.ondata(line, xform._line++, signaled);
+			}
+			else {
+				xform._line++;
 			}
 
 			signaled(line);
@@ -152,7 +160,8 @@ Transformer.prototype._flush = function(done) {
 		var line = this.encoding && !/binary|buffer/.test(this.encoding)? this.remnant.toString(this.encoding) : this.remnant;
 		if(this.ondata)
 			line = 	this.ondata(line, this._line++);
-
+		else
+			this._line++;
 		this.push(line, this.encoding);
 	}
 	done();
