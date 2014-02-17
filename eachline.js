@@ -86,6 +86,7 @@ Dummy.prototype._write = function(line, encoding, done) {
 function Transformer() {
 	this._line = 0;
 	Transform.call(this);
+	this._readableState.objectMode=true;
 }
 Transformer.prototype = Object.create(Transform.prototype, { constructor: { value: Transformer }});
 module.exports.Transformer = Transformer;
@@ -119,26 +120,10 @@ Transformer.prototype._transform = function(chunk, encoding, done) {
 			}
 			start = eol+(hasCRLF? 2:1);
 
-			var sigd = false;
-			function signaled(data) {
-				if(sigd) return;
-				sigd=true;
-				if(data) {
-					xform.push(data, xform.encoding);
-				}
-				next();
-			}
-
 			if(enc)
 				line= line.toString(enc);
-			if(xform.ondata){
-				line = xform.ondata(line, xform._line++, signaled);
-			}
-			else {
-				xform._line++;
-			}
 
-			signaled(line);
+			xform._pushline(line, next);
 		}
 		else {
 			if(xform.remnant){//no LF found in this chunk
@@ -155,14 +140,31 @@ Transformer.prototype._transform = function(chunk, encoding, done) {
 	next();
 };
 
+Transformer.prototype._pushline = function(line, next){
+
+	var sigd = false;
+	var xform = this;
+	function signaled(data) {
+		if(sigd) return;
+		sigd=true;
+		xform.push(data, xform.encoding);
+		next && next();
+	}
+
+	if(xform.ondata){
+		line = xform.ondata(line, xform._line++, signaled);
+	}
+	else {
+		xform._line++;
+	}
+
+	signaled(line);
+};
+
 Transformer.prototype._flush = function(done) {
 	if(this.remnant) {
 		var line = this.encoding && !/binary|buffer/.test(this.encoding)? this.remnant.toString(this.encoding) : this.remnant;
-		if(this.ondata)
-			line = 	this.ondata(line, this._line++);
-		else
-			this._line++;
-		this.push(line, this.encoding);
+		this._pushline(line);
 	}
 	done();
 };
