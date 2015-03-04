@@ -147,7 +147,7 @@ Transformer.prototype._pushline = function(line, next){
 	function signaled(data) {
 		if(sigd) return;
 		sigd=true;
-		xform.push(data, xform.encoding);
+		if(data) xform.push(data, xform.encoding);
 		next && next();
 	}
 
