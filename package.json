@@ -9,12 +9,12 @@
 		"pipe",
 		"transform"
 	],
-	"homepage": "http://github.com/williamwicks/node-eachline",
+	"homepage": "http://github.com/williamkapke/node-eachline",
 	"repository": {
 		"type": "git",
-		"url": "git://github.com/williamwicks/node-eachline.git"
+		"url": "git://github.com/williamkapke/node-eachline.git"
 	},
-	"author": "William Wicks<wjwicks@gmail.com>",
+	"author": "William Kapke<william.kapke@gmail.com>",
 	"main": "./eachline.js",
 	"dependencies": {
 		"type-of": "~2"

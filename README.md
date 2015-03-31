@@ -30,15 +30,15 @@ eachline.in(__dirname+'/.gitignore', function(line){
 ...or if you need a simple http GET:
 ```javascript
 var eachline = require('eachline');
-var url = 'https://raw.github.com/williamwicks/node-eachline/master/.gitignore';
+var url = 'https://raw.github.com/williamkapke/node-eachline/master/.gitignore';
 eachline.in(url, function(line){
   console.log(line);
 });
 ```
 
 ##Transforming Streams
-[eachline](https://github.com/williamwicks/node-eachline) uses `Streams2`'s transformation 
-feature allowing you to throw [eachline](https://github.com/williamwicks/node-eachline) between `.pipe()`s
+[eachline](https://github.com/williamkapke/node-eachline) uses `Streams2`'s transformation
+feature allowing you to throw [eachline](https://github.com/williamkapke/node-eachline) between `.pipe()`s
 to modify output as needed.
 
 ```javascript
@@ -94,7 +94,7 @@ License
 
 The MIT License (MIT)
 
-Copyright (c) 2013 William Wicks
+Copyright (c) 2013 William Kapke
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
