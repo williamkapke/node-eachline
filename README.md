@@ -79,7 +79,8 @@ eachline.in(__dirname+'/.gitignore', function(data){
 });
 ```
 
-**callback(data, lineno[ ,next])**<BR>
+<a id=callback></a>
+##callback(data, lineno[ ,next])
 The `callback` arguments above will be called for every line found in the `ReadableStream`.
 
 It will be passed the `data` and `lineno` arguments. You can optionally defined a
@@ -88,6 +89,21 @@ if asynchronous flow should be used. If found, you must call `next()` to continu
 
 For Stream transformations, any value `return`'d will be written to the next `pipe()` in the chain.
 
+###this.finished
+Inside the [callback](#callback) function, `this` refers to the transformer. For convenience of
+detecting the final line of the stream, there is a `this.finished` property.
+
+```javascript
+var fs = require("fs");
+var eachline = require("eachline");
+
+fs.createReadStream('./.gitignore')
+  .pipe(eachline(function(line, i){
+    //only write the last line if it is not empty
+    if(!this.finished || line)
+      console.log(i, line);
+  }));
+```
 
 License
 =======

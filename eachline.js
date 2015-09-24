@@ -168,3 +168,9 @@ Transformer.prototype._flush = function(done) {
 	}
 	done();
 };
+
+Object.defineProperty(Transformer.prototype, 'finished', {
+	get: function () {
+		return this._writableState.ending;
+	}
+});
