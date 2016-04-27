@@ -123,7 +123,9 @@ Transformer.prototype._transform = function(chunk, encoding, done) {
 			if(enc)
 				line= line.toString(enc);
 
-			xform._pushline(line, next);
+			setImmediate(function () {
+				xform._pushline(line, next);
+			});
 		}
 		else {
 			if(xform.remnant){//no LF found in this chunk

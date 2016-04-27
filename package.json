@@ -1,25 +1,26 @@
 {
-	"name": "eachline",
-	"version": "3.0.3",
-	"description": "Streams2 line reader",
-	"keywords": [
-		"streams2",
-		"linereader",
-		"async", "asynchronous",
-		"pipe",
-		"transform"
-	],
-	"homepage": "http://github.com/williamkapke/node-eachline",
-	"repository": {
-		"type": "git",
-		"url": "git://github.com/williamkapke/node-eachline.git"
-	},
-	"author": "William Kapke<william.kapke@gmail.com>",
-	"main": "./eachline.js",
-	"dependencies": {
-		"type-of": "~2"
-	},
-	"engines": {
-		"node": ">=0.10.0"
-	}
+  "name": "eachline",
+  "version": "3.0.4",
+  "description": "Streams2 line reader",
+  "keywords": [
+    "streams2",
+    "linereader",
+    "async",
+    "asynchronous",
+    "pipe",
+    "transform"
+  ],
+  "homepage": "http://github.com/williamkapke/node-eachline",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/williamkapke/node-eachline.git"
+  },
+  "author": "William Kapke<william.kapke@gmail.com>",
+  "main": "./eachline.js",
+  "dependencies": {
+    "type-of": "~2"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  }
 }
