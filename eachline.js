@@ -155,6 +155,7 @@ Transformer.prototype._pushline = function(line, next){
 
 	if(xform.ondata){
 		line = xform.ondata(line, xform._line++, signaled);
+		if(xform.ondata.length === 3) return;
 	}
 	else {
 		xform._line++;
